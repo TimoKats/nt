@@ -14,7 +14,9 @@ func ClearNotebook(arguments Arguments) error {
 
 func ReadNotebook(arguments Arguments) error {
   for _, note := range notebook.Notes {
-    Info.Println(note.Id, note.Text, note.Tags, note.Status)
+    if hasOverlap(arguments.Tags, note.Tags) || len(arguments.Tags) == 0 {
+      Info.Println(note.Id, note.Text, note.Tags, note.Status)
+    }
   }
   return nil
 }
