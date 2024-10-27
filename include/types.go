@@ -4,18 +4,24 @@ import (
   "time"
 )
 
-type ArgType int
+type CommandType int
+type StatusType int
 
 const (
-  None ArgType = iota
-  Write
-  Read
-  Tags
+  None CommandType = iota
+  Add
+  Get
+  Clear
+)
+
+const (
+  Todo StatusType = iota
+  InProgress
+  Done
 )
 
 type Arguments struct {
-  Command string
-  CurrentType ArgType
+  Command CommandType
 
   // optional fields
   Tags []string
@@ -23,17 +29,18 @@ type Arguments struct {
 }
 
 type Note struct {
-  Id string
+  Id int
   Text string
+  Status StatusType
   Created time.Time
 
   // optional
+  Due time.Time
   Tags []string
-  Expires time.Time
+  Comments []string
 }
 
-// add quick notes in seperate index that I can clean
 type Notebook struct {
-  TagIndex map[string][]*Note `json:"Notebook"`
+  Notes []*Note `json:"Notebook"`
 }
 

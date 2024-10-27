@@ -6,7 +6,6 @@ import (
   "os"
 )
 
-var notebook Notebook
 var CONFIGPATH string
 var CONFIGERR error
 

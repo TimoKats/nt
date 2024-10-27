@@ -8,10 +8,12 @@ import (
 
 func run(arguments nt.Arguments) error {
   switch arguments.Command {
-  case "write":
-    return nt.WriteNote(arguments)
-  case "read":
+  case nt.Add:
+    return nt.AddNote(arguments)
+  case nt.Get:
     return nt.ReadNotebook(arguments)
+  case nt.Clear:
+    return nt.ClearNotebook(arguments)
   default:
     return errors.New("Command not found")
   }
