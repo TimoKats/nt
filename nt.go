@@ -10,12 +10,14 @@ func run(arguments nt.Arguments) error {
   switch arguments.Command {
   case nt.Add:
     return nt.AddNote(arguments)
-  case nt.Get:
+  case nt.List:
     return nt.ReadNotebook(arguments)
   case nt.Clear:
     return nt.ClearNotebook(arguments)
+  case nt.Move:
+    return nt.MoveNote(arguments)
   default:
-    return errors.New("Command not found")
+    return errors.New("No valid command found. Use <<ls, add, mv>>")
   }
 }
 

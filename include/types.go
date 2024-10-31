@@ -5,19 +5,13 @@ import (
 )
 
 type CommandType int
-type StatusType int
 
 const (
   None CommandType = iota
   Add
-  Get
+  List
+  Move
   Clear
-)
-
-const (
-  Todo StatusType = iota
-  InProgress
-  Done
 )
 
 type Arguments struct {
@@ -31,7 +25,7 @@ type Arguments struct {
 type Note struct {
   Id int
   Text string
-  Status StatusType
+  Done bool
   Created time.Time
 
   // optional
