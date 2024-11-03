@@ -11,19 +11,23 @@ const (
   Add
   List
   Move
+  Tags
+  Help
   Clear
+  Comment
 )
 
 type Arguments struct {
   Command CommandType
 
   // optional fields
+  Flags []string
   Tags []string
   Text string
+  NoteId int
 }
 
 type Note struct {
-  Id int
   Text string
   Done bool
   Created time.Time

@@ -3,7 +3,6 @@ package include
 import (
   "regexp"
   "strconv"
-  "strings"
 )
 
 func hasOverlap(list1 []string, list2 []string) bool {
@@ -17,6 +16,10 @@ func hasOverlap(list1 []string, list2 []string) bool {
   return false
 }
 
+func removeIndex(s []*Note, index int) []*Note {
+  return append(s[:index], s[index+1:]...)
+}
+
 func contains(slice []string, item string) bool {
   for _, v := range slice {
     if v == item {
@@ -26,7 +29,7 @@ func contains(slice []string, item string) bool {
   return false
 }
 
-func extractInts(input string) (int, error) {
+func extractInts(input string) int {
   extractedInts := ""
   re := regexp.MustCompile(`\d+`)
   matches := re.FindAllString(input, -1)
@@ -35,51 +38,8 @@ func extractInts(input string) (int, error) {
   }
   num, convErr := strconv.Atoi(extractedInts)
   if convErr != nil {
-    return 0, convErr
+    return -1
   }
-  return num, nil
-}
-
-func responsiveWhitespace(text string, columnwidth int) string {
-  if len(text) > columnwidth {
-    text = text[:columnwidth]
-  }
-  spaces := columnwidth - len(text)
-  for i := 0; i < spaces; i++ {
-    text += " "
-  }
-  return text
-}
-
-func formatDone(taskDone bool) string {
-  if taskDone {
-    return "[X]"
-  }
-  return "[ ]"
-}
-
-func formatText(text string) string {
-  text = strings.Replace(text, "\n", " ", -1)
-  maxLength := 25
-  if len(text) > maxLength {
-    return text[:maxLength] + "..."
-  }
-  spaces := (maxLength - len(text)) + 3
-  for i := 0; i < spaces; i++ {
-    text += " "
-  }
-  return text
-}
-
-func formatTags(tags []string) string {
-  formattedTags := ""
-  for index, tag := range tags {
-    if index < len(tags) - 1 {
-      formattedTags += tag + ", "
-    } else {
-      formattedTags += tag
-    }
-  }
-  return formattedTags
+  return num
 }
 
