@@ -20,8 +20,9 @@ func run(arguments nt.Arguments) error {
     return nt.AddComment(arguments)
   case nt.Tags:
     return nt.ReadTags(arguments)
-  case nt.Help:
-    return nt.FormatInfo()
+  case nt.Server:
+    nt.RunServer()
+    return nil
   default:
     return errors.New("No valid command found. Use <<ls, add, mv>>")
   }

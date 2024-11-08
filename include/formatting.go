@@ -41,12 +41,12 @@ func formatSummaryOutput(index int, note *Note) {
   done := formatDone(note.Done)
   text := formatSummaryText(note.Text)
   tags := formatTags(note.Tags)
-  Info.Println("", index, " |", done, " | ", text, " | ", tags)
+  Info.Println(index, "  ", done, "  ", text, "  ", tags)
 }
 
 func formatSummaryHeader() {
-  Info.Println(" Id | Done | Text                             | Tags")
-  Info.Println("----|------|----------------------------------|---------")
+  Info.Println("Id   Done   Text                              Tags")
+  Info.Println("---- ------ --------------------------------- ---------")
 }
 
 func formatSingleOutput(note *Note) {
@@ -59,14 +59,7 @@ func formatSingleOutput(note *Note) {
 }
 
 func FormatInfo() error {
-  Info.Println(`
-  ################### Description: nt, CLI note taking with clipboard integration.
-  #         #         Version: v0.0.1
-  #         #         Author: TimoKats
-  #         #         License: GPLv3
-  #         #         Link: github.com/TimoKats/nt
-
-  Commands:
+  Info.Println(`Commands:
     - test
     - test
   `)

@@ -12,8 +12,8 @@ const (
   List
   Move
   Tags
-  Help
   Clear
+  Server
   Comment
 )
 

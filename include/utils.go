@@ -1,6 +1,7 @@
 package include
 
 import (
+  "time"
   "regexp"
   "strconv"
 )
@@ -41,5 +42,11 @@ func extractInts(input string) int {
     return -1
   }
   return num
+}
+
+func fromToday(note *Note) bool {
+  current := time.Now()
+  startOfToday := current.Truncate(24 * time.Hour)
+  return note.Created.After(startOfToday)
 }
 

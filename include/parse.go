@@ -28,8 +28,8 @@ func GetCommand(argument string) CommandType {
     return Comment
   case "tags", "tag":
     return Tags
-  case "help", "h":
-    return Help
+  case "run-server":
+    return Server
   default:
     return None
   }
