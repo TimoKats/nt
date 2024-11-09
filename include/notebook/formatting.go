@@ -1,8 +1,10 @@
 package include
 
 import (
-  "strings"
+  . "github.com/TimoKats/nt/include/shared"
+
   "github.com/atotto/clipboard"
+  "strings"
 )
 
 func formatDone(taskDone bool) string {

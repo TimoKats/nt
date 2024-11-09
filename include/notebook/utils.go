@@ -1,6 +1,8 @@
 package include
 
 import (
+  . "github.com/TimoKats/nt/include/shared"
+
   "time"
   "regexp"
   "strconv"
