@@ -15,6 +15,9 @@ const (
   Clear
   Server
   Comment
+
+  Pull
+  Push
 )
 
 type Arguments struct {

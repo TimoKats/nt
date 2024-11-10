@@ -1,8 +1,6 @@
 package include
 
 import (
-  . "github.com/TimoKats/nt/include/shared"
-
   "encoding/json"
   "errors"
   "os"
@@ -23,7 +21,7 @@ func ConfigDir() (string, error) {
   return homedir + "/.nt/", createErr
 }
 
-func WriteNotebook() error {
+func WriteNotebook(notebook Notebook) error {
   jsonData, jsonErr := json.Marshal(&notebook)
   writeErr := os.WriteFile(CONFIGPATH + "notebook.json", jsonData, 0644)
   if err := errors.Join(jsonErr, writeErr); err != nil {
@@ -32,19 +30,17 @@ func WriteNotebook() error {
   return nil
 }
 
-func LoadNotebook() error {
+func LoadNotebook() (Notebook, error) {
+  var notebook Notebook
   jsonFile, fileErr := os.ReadFile(CONFIGPATH + "notebook.json")
   if fileErr == nil {
     jsonErr := json.Unmarshal(jsonFile, &notebook)
-    if jsonErr == nil {
-      return nil
-    }
-    return jsonErr
+    return notebook, jsonErr
   } else if errors.Is(fileErr, os.ErrNotExist) {
     Warn.Println("No notebook found. Will create new file on save.")
-    return nil
+    return notebook, nil
   }
-  return fileErr
+  return notebook, fileErr
 }
 
 func init() {

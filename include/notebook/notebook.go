@@ -6,7 +6,8 @@ import (
   "time"
 )
 
-var notebook Notebook
+var Notes Notebook
+var loadErr error
 
 func noteSelected(index int, note *Note, arguments Arguments) bool {
   if hasOverlap(arguments.Tags, note.Tags) {
@@ -32,23 +33,23 @@ func argumentsEmpty(arguments Arguments) bool {
 func ClearNotebook(arguments Arguments) error {
   correctedIndex := 0
   if argumentsEmpty(arguments) {
-    notebook.Notes = []*Note{}
+    Notes.Notes = []*Note{}
   } else {
-    for index, note := range notebook.Notes {
+    for index, note := range Notes.Notes {
       if noteSelected(index, note, arguments) {
-        notebook.Notes = removeIndex(notebook.Notes, correctedIndex)
+        Notes.Notes = removeIndex(Notes.Notes, correctedIndex)
       } else {
         correctedIndex += 1
       }
     }
   }
-  writeErr := WriteNotebook()
+  writeErr := WriteNotebook(Notes)
   return writeErr
 }
 
 func ReadNotebook(arguments Arguments) error {
   if argumentsEmpty(arguments) { formatSummaryHeader() }
-  for index, note := range notebook.Notes {
+  for index, note := range Notes.Notes {
     if noteSelected(index, note, arguments) || argumentsEmpty(arguments) {
       if arguments.NoteId == -1 {
         formatSummaryOutput(index, note)
@@ -62,7 +63,7 @@ func ReadNotebook(arguments Arguments) error {
 
 func ReadTags(arguments Arguments) error {
   tags := make(map[string]int)
-  for _, note := range notebook.Notes {
+  for _, note := range Notes.Notes {
     for _, tag := range note.Tags {
       tags[tag] += 1
     }
@@ -79,28 +80,32 @@ func AddNote(arguments Arguments) error {
     Created: time.Now(),
     Tags: arguments.Tags,
   }
-  notebook.Notes = append(notebook.Notes, &note)
-  writeErr := WriteNotebook()
+  Notes.Notes = append(Notes.Notes, &note)
+  writeErr := WriteNotebook(Notes)
   return writeErr
 }
 
 func MoveNote(arguments Arguments) error {
-  for index, note := range notebook.Notes {
+  for index, note := range Notes.Notes {
     if arguments.NoteId == index {
-      notebook.Notes[index].Done = !note.Done
+      Notes.Notes[index].Done = !note.Done
     }
   }
-  writeErr := WriteNotebook()
+  writeErr := WriteNotebook(Notes)
   return writeErr
 }
 
 func AddComment(arguments Arguments) error {
-  for index, note := range notebook.Notes {
+  for index, note := range Notes.Notes {
     if arguments.NoteId == index {
-      notebook.Notes[index].Comments = append(note.Comments, arguments.Text)
+      Notes.Notes[index].Comments = append(note.Comments, arguments.Text)
     }
   }
-  writeErr := WriteNotebook()
+  writeErr := WriteNotebook(Notes)
   return writeErr
+}
+
+func init()  {
+  Notes, loadErr = LoadNotebook()
 }
 

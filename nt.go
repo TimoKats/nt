@@ -1,45 +1,51 @@
 package main
 
 import (
-  shared "github.com/TimoKats/nt/include/shared"
   notebook "github.com/TimoKats/nt/include/notebook"
   server "github.com/TimoKats/nt/include/server"
+  . "github.com/TimoKats/nt/include/shared"
 
   "errors"
   "os"
 )
 
-func run(arguments shared.Arguments) error {
+func run(arguments Arguments) error {
   switch arguments.Command {
-  case shared.Add:
+
+  // notebook related
+  case Add:
     return notebook.AddNote(arguments)
-  case shared.List:
+  case List:
     return notebook.ReadNotebook(arguments)
-  case shared.Clear:
+  case Clear:
     return notebook.ClearNotebook(arguments)
-  case shared.Move:
+  case Move:
     return notebook.MoveNote(arguments)
-  case shared.Comment:
+  case Comment:
     return notebook.AddComment(arguments)
-  case shared.Tags:
+  case Tags:
     return notebook.ReadTags(arguments)
-  case shared.Server:
+
+  // server related
+  case Server:
     server.RunServer()
     return nil
+  case Push:
+    return server.PushNotebook(notebook.Notes)
+  case Pull:
+    var pullErr error
+    notebook.Notes, pullErr = server.PullNotebook()
+    return pullErr
   default:
     return errors.New("No valid command found. Use <<ls, add, mv>>")
   }
 }
 
 func main() {
-  loadErr := notebook.LoadNotebook()
-  if loadErr != nil {
-    shared.Error.Println(loadErr)
-    return
-  }
-  arguments := shared.ParseArgs(os.Args)
+  // check some error variables
+  arguments := ParseArgs(os.Args)
   runErr := run(arguments)
   if runErr != nil {
-    shared.Error.Println(runErr)
+    Error.Println(runErr)
   }
 }
