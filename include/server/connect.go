@@ -5,13 +5,18 @@ import (
 
   "encoding/json"
   "net/http"
+  "strconv"
   "errors"
   "bytes"
 )
 
 func PushNotebook(notebook Notebook) error {
+  if len(NtConfig.Server.Url) == 0 {
+    return errors.New("No URL provided in config.")
+  }
   jsonData, jsonErr := json.Marshal(notebook)
-  req, requestErr := http.NewRequest("POST", "http://localhost:8080/put", bytes.NewBuffer(jsonData))
+  url := NtConfig.Server.Url + ":" + strconv.Itoa(NtConfig.Server.Port)
+  req, requestErr := http.NewRequest("POST", url + "/push", bytes.NewBuffer(jsonData))
   if err := errors.Join(jsonErr, requestErr); err != nil {
     return err
   }
@@ -19,14 +24,18 @@ func PushNotebook(notebook Notebook) error {
   req.SetBasicAuth("username", "password")
   client := &http.Client{}
   resp, responseErr := client.Do(req)
-  Info.Println(resp)
+  Info.Printf("Pushed %d notes to server. %s.", len(notebook.Notes), resp.Status)
   return responseErr
 }
 
 func PullNotebook() (Notebook, error) {
   var notebook Notebook
+  if len(NtConfig.Server.Url) == 0 {
+    return notebook, errors.New("No URL provided in config.")
+  }
+  url := NtConfig.Server.Url + ":" + strconv.Itoa(NtConfig.Server.Port)
   client := &http.Client{}
-  req, _ := http.NewRequest("GET", "http://localhost:8080/get", nil)
+  req, _ := http.NewRequest("GET", url + "/pull", nil)
   req.SetBasicAuth("username", "password")
   resp, requestErr := client.Do(req)
   if requestErr != nil {
@@ -38,7 +47,9 @@ func PullNotebook() (Notebook, error) {
   }
   jsonErr := json.NewDecoder(resp.Body).Decode(&notebook)
   if jsonErr == nil {
+    Info.Printf("Pulled %d notes from server. %s.", len(notebook.Notes), resp.Status)
     WriteNotebook(notebook)
   }
   return notebook, jsonErr
 }
+

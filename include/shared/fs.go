@@ -1,15 +1,19 @@
 package include
 
 import (
+  toml "github.com/pelletier/go-toml/v2"
+
   "encoding/json"
   "errors"
   "os"
 )
 
-var CONFIGPATH string
-var CONFIGERR error
+var NtPath string
+var NtPathErr error
+var NtConfig Config
+var NtConfigErr error
 
-func ConfigDir() (string, error) {
+func NtDir() (string, error) {
   homedir, dirErr := os.UserHomeDir()
   var createErr error = nil
   if dirErr != nil {
@@ -23,7 +27,7 @@ func ConfigDir() (string, error) {
 
 func WriteNotebook(notebook Notebook) error {
   jsonData, jsonErr := json.Marshal(&notebook)
-  writeErr := os.WriteFile(CONFIGPATH + "notebook.json", jsonData, 0644)
+  writeErr := os.WriteFile(NtPath + "notebook.json", jsonData, 0644)
   if err := errors.Join(jsonErr, writeErr); err != nil {
     return err
   }
@@ -32,7 +36,7 @@ func WriteNotebook(notebook Notebook) error {
 
 func LoadNotebook() (Notebook, error) {
   var notebook Notebook
-  jsonFile, fileErr := os.ReadFile(CONFIGPATH + "notebook.json")
+  jsonFile, fileErr := os.ReadFile(NtPath + "notebook.json")
   if fileErr == nil {
     jsonErr := json.Unmarshal(jsonFile, &notebook)
     return notebook, jsonErr
@@ -43,7 +47,33 @@ func LoadNotebook() (Notebook, error) {
   return notebook, fileErr
 }
 
+func defaultConfig() Config {
+  return Config {
+    Server: ServerConfig {
+      Url: "",
+      Port: 8282,
+    },
+    Notebook: NotebookConfig {
+      Width: 75,
+    },
+  }
+}
+
+func LoadConfig() (Config, error) {
+  NtConfig = defaultConfig()
+  tomlFile, fileErr := os.ReadFile(NtPath + "config.toml")
+  if fileErr == nil {
+    tomlErr := toml.Unmarshal(tomlFile, &NtConfig)
+    return NtConfig, tomlErr
+  } else if errors.Is(fileErr, os.ErrNotExist) {
+    Warn.Println("No config, using default values")
+    return NtConfig, nil
+  }
+  return NtConfig, fileErr
+}
+
 func init() {
-  CONFIGPATH, CONFIGERR = ConfigDir()
+  NtPath, NtPathErr = NtDir()
+  NtConfig, NtConfigErr = LoadConfig()
 }
 

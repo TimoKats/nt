@@ -7,7 +7,7 @@ import (
 )
 
 var Notes Notebook
-var loadErr error
+var LoadErr error
 
 func noteSelected(index int, note *Note, arguments Arguments) bool {
   if hasOverlap(arguments.Tags, note.Tags) {
@@ -48,6 +48,7 @@ func ClearNotebook(arguments Arguments) error {
 }
 
 func ReadNotebook(arguments Arguments) error {
+  Info.Printf("hey hallo: %v", NtConfig)
   if argumentsEmpty(arguments) { formatSummaryHeader() }
   for index, note := range Notes.Notes {
     if noteSelected(index, note, arguments) || argumentsEmpty(arguments) {
@@ -106,6 +107,6 @@ func AddComment(arguments Arguments) error {
 }
 
 func init()  {
-  Notes, loadErr = LoadNotebook()
+  Notes, LoadErr = LoadNotebook()
 }
 

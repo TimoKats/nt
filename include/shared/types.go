@@ -4,6 +4,8 @@ import (
   "time"
 )
 
+// parser
+
 type CommandType int
 
 const (
@@ -23,19 +25,19 @@ const (
 type Arguments struct {
   Command CommandType
 
-  // optional fields
   Flags []string
   Tags []string
   Text string
   NoteId int
 }
 
+// notebook
+
 type Note struct {
   Text string
   Done bool
   Created time.Time
 
-  // optional
   Due time.Time
   Tags []string
   Comments []string
@@ -43,5 +45,21 @@ type Note struct {
 
 type Notebook struct {
   Notes []*Note `json:"Notebook"`
+}
+
+// config
+
+type NotebookConfig struct {
+  Width int `toml:"width"`
+}
+
+type ServerConfig struct {
+  Url string `toml:"url"`
+  Port int `toml:"port"`
+}
+
+type Config struct {
+  Notebook NotebookConfig `toml:"notebook"`
+  Server ServerConfig `toml:"server"`
 }
 
