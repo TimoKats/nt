@@ -5,38 +5,60 @@ import (
 
   "encoding/json"
   "net/http"
-  "strconv"
   "errors"
   "bytes"
 )
 
+func formatUrl(path string) string {
+  return NtConfig.Server.Url + NtConfig.Server.Port + "/" + path
+}
+
+func promptAuth() (string, string) {
+  username := InsecureInput("[1/2] Set username for nts: ")
+  password := SecureInput("[2/2] Set password for nts: ")
+  return string(username), string(password)
+}
+
 func PushNotebook(notebook Notebook) error {
+  // check prerequisites
   if len(NtConfig.Server.Url) == 0 {
     return errors.New("No URL provided in config.")
   }
   jsonData, jsonErr := json.Marshal(notebook)
-  url := NtConfig.Server.Url + ":" + strconv.Itoa(NtConfig.Server.Port)
-  req, requestErr := http.NewRequest("POST", url + "/push", bytes.NewBuffer(jsonData))
-  if err := errors.Join(jsonErr, requestErr); err != nil {
-    return err
-  }
+  if jsonErr != nil { return jsonErr }
+
+  // create request
+  req, requestErr := http.NewRequest("POST", formatUrl("push"), bytes.NewBuffer(jsonData))
+  if requestErr != nil { return requestErr }
   req.Header.Set("Content-Type", "application/json")
-  req.SetBasicAuth("username", "password")
+  username, password := promptAuth()
+  req.SetBasicAuth(username, password)
   client := &http.Client{}
+
+  // execute the request and handle response
   resp, responseErr := client.Do(req)
-  Info.Printf("Pushed %d notes to server. %s.", len(notebook.Notes), resp.Status)
+  if responseErr != nil || resp.StatusCode != 200 {
+    Error.Printf("%s", resp.Status)
+  } else {
+    Info.Printf("\033[32m" + "[%d] Pushed %d notes to server." + "\033[0m", resp.StatusCode, len(notebook.Notes))
+  }
   return responseErr
 }
 
 func PullNotebook() (Notebook, error) {
+  // check prerequisites
   var notebook Notebook
   if len(NtConfig.Server.Url) == 0 {
     return notebook, errors.New("No URL provided in config.")
   }
-  url := NtConfig.Server.Url + ":" + strconv.Itoa(NtConfig.Server.Port)
+
+  // create request
   client := &http.Client{}
-  req, _ := http.NewRequest("GET", url + "/pull", nil)
-  req.SetBasicAuth("username", "password")
+  req, _ := http.NewRequest("GET", formatUrl("pull"), nil)
+  username, password := promptAuth()
+  req.SetBasicAuth(username, password)
+
+  // execute the request and handle response
   resp, requestErr := client.Do(req)
   if requestErr != nil {
     return notebook, requestErr
@@ -51,5 +73,21 @@ func PullNotebook() (Notebook, error) {
     WriteNotebook(notebook)
   }
   return notebook, jsonErr
+}
+
+func PingNotebook(notebook Notebook) error {
+  // check prerequisites
+  if len(NtConfig.Server.Url) == 0 {
+    return errors.New("No URL provided in config.")
+  }
+
+  // create request
+  req, requestErr := http.NewRequest("POST", formatUrl("ping"), nil)
+  client := &http.Client{}
+
+  // execute the request and handle response
+  resp, responseErr := client.Do(req)
+  Info.Printf("%s.", resp.Status)
+  return errors.Join(responseErr, requestErr);
 }
 

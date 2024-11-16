@@ -4,12 +4,27 @@ package include
 import (
   . "github.com/TimoKats/nt/include/shared"
 
-  "fmt"
-  "net/http"
   "crypto/sha256"
   "crypto/subtle"
   "encoding/json"
+  "net/http"
+  "errors"
+  "fmt"
 )
+
+var auth Authentication
+
+func configauth() error {
+  username := InsecureInput("[1/3] Set username for nts: ")
+  password := SecureInput("[2/3] Set password for nts: ")
+  passwordCheck := SecureInput("[3/3] Repeat password:      ")
+  if string(password) != string(passwordCheck) {
+    return errors.New("Passwords don't match.")
+  }
+  auth.Username = username
+  auth.Password = password
+  return nil
+}
 
 func basicAuth(next http.Handler) http.HandlerFunc {
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -17,8 +32,8 @@ func basicAuth(next http.Handler) http.HandlerFunc {
     if ok {
       usernameHash := sha256.Sum256([]byte(username))
       passwordHash := sha256.Sum256([]byte(password))
-      expectedUsernameHash := sha256.Sum256([]byte("username"))
-      expectedPasswordHash := sha256.Sum256([]byte("password"))
+      expectedUsernameHash := sha256.Sum256(auth.Username)
+      expectedPasswordHash := sha256.Sum256(auth.Password)
       usernameMatch := (subtle.ConstantTimeCompare(usernameHash[:], expectedUsernameHash[:]) == 1)
       passwordMatch := (subtle.ConstantTimeCompare(passwordHash[:], expectedPasswordHash[:]) == 1)
       if usernameMatch && passwordMatch {
@@ -30,7 +45,7 @@ func basicAuth(next http.Handler) http.HandlerFunc {
   })
 }
 
-func putHandler(w http.ResponseWriter, r *http.Request) {
+func pushHandler(w http.ResponseWriter, r *http.Request) {
   var notebook Notebook
   decoder := json.NewDecoder(r.Body)
   decodeErr := decoder.Decode(&notebook)
@@ -49,7 +64,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
   fmt.Fprintln(w, "pong")
 }
 
-func getHandler(w http.ResponseWriter, r *http.Request) {
+func pullHandler(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/json")
   notebook, loadErr := LoadNotebook()
   if loadErr != nil {
@@ -60,11 +75,14 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-func RunServer() {
-  http.Handle("/push", basicAuth(http.HandlerFunc(putHandler)))
-  http.Handle("/pull", basicAuth(http.HandlerFunc(getHandler)))
+func RunServer() error {
+  if configErr := configauth(); configErr != nil {
+    return configErr
+  }
+  http.Handle("/push", basicAuth(http.HandlerFunc(pushHandler)))
+  http.Handle("/pull", basicAuth(http.HandlerFunc(pullHandler)))
   http.Handle("/ping", http.HandlerFunc(healthHandler))
-  Warn.Println("server started at :8080")
-  http.ListenAndServe(":8080", nil)
+  Warn.Printf("server started at %s", NtConfig.Server.Port)
+  http.ListenAndServe(NtConfig.Server.Port, nil)
+  return nil
 }
-

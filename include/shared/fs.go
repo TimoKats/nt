@@ -51,7 +51,7 @@ func defaultConfig() Config {
   return Config {
     Server: ServerConfig {
       Url: "",
-      Port: 8282,
+      Port: ":8282",
     },
     Notebook: NotebookConfig {
       Width: 75,
@@ -66,7 +66,6 @@ func LoadConfig() (Config, error) {
     tomlErr := toml.Unmarshal(tomlFile, &NtConfig)
     return NtConfig, tomlErr
   } else if errors.Is(fileErr, os.ErrNotExist) {
-    Warn.Println("No config, using default values")
     return NtConfig, nil
   }
   return NtConfig, fileErr

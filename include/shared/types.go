@@ -47,6 +47,13 @@ type Notebook struct {
   Notes []*Note `json:"Notebook"`
 }
 
+// server
+
+type Authentication struct {
+  Username []byte
+  Password []byte
+}
+
 // config
 
 type NotebookConfig struct {
@@ -55,7 +62,7 @@ type NotebookConfig struct {
 
 type ServerConfig struct {
   Url string `toml:"url"`
-  Port int `toml:"port"`
+  Port string `toml:"port"`
 }
 
 type Config struct {

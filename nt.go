@@ -28,8 +28,7 @@ func run(arguments Arguments) error {
 
   // server related
   case Server:
-    server.RunServer()
-    return nil
+    return server.RunServer()
   case Push:
     return server.PushNotebook(notebook.Notes)
   case Pull:
@@ -41,8 +40,15 @@ func run(arguments Arguments) error {
   }
 }
 
+func InitErrs() bool {
+  return errors.Join(NtPathErr, NtConfigErr) != nil
+}
+
 func main() {
-  // check some error variables
+  if initErr := errors.Join(NtPathErr, NtConfigErr); initErr != nil {
+    Error.Println(initErr)
+    return
+  }
   arguments := ParseArgs(os.Args)
   runErr := run(arguments)
   if runErr != nil {
