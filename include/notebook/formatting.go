@@ -16,7 +16,7 @@ func formatDone(taskDone bool) string {
 
 func formatSummaryText(text string) string {
   text = strings.Replace(text, "\n", " ", -1)
-  maxLength := 30
+  maxLength := NtConfig.Notebook.Width + 1
   if len(text) > maxLength {
     return text[:maxLength]
   }
@@ -47,8 +47,10 @@ func formatSummaryOutput(index int, note *Note) {
 }
 
 func formatSummaryHeader() {
-  Info.Println("Id   Done   Text                              Tags")
-  Info.Println("---- ------ --------------------------------- ---------")
+  headerWidth := strings.Repeat(" ", NtConfig.Notebook.Width)
+  seperatorWidth := strings.Repeat("-", NtConfig.Notebook.Width)
+  Info.Printf("Id   Done   Text%s Tags", headerWidth)
+  Info.Printf("---- ------ ----%s ---------", seperatorWidth)
 }
 
 func formatSingleOutput(note *Note) {

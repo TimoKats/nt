@@ -3,6 +3,7 @@ package include
 import (
   "github.com/atotto/clipboard"
 
+  "strings"
   "strconv"
 )
 
@@ -54,24 +55,26 @@ func ParseArgs(arguments []string) Arguments {
   var parsedArgs Arguments
   // set some defaults
   parsedArgs.NoteId = -1
-  for index, argument := range arguments {
-    if index == 1 {
-      parsedArgs.Command = GetCommand(argument)
-    } else if index > 1 {
-      if string(argument[0]) == "@" {
-        parsedArgs.Tags = append(parsedArgs.Tags, argument)
-      } else if string(argument) == "*c" {
-        parsedArgs.Text += readClipboard()
-      } else if isFlag(argument) {
-        parsedArgs.Flags = append(parsedArgs.Flags, argument)
-      } else {
-        parsedArgs.Text += argument + " "
+  for index, multiArgument := range arguments { // sometimes "" protect args on windows
+    for _, argument := range strings.Fields(multiArgument) {
+      if index == 1 {
+        parsedArgs.Command = GetCommand(argument)
+      } else if index > 1 {
+        if string(argument[0]) == "@" {
+          parsedArgs.Tags = append(parsedArgs.Tags, argument)
+        } else if string(argument) == "*c" {
+          parsedArgs.Text += readClipboard()
+        } else if isFlag(argument) {
+          parsedArgs.Flags = append(parsedArgs.Flags, argument)
+        } else {
+          parsedArgs.Text += argument + " "
+        }
       }
-    }
-    if index == 2 {
-      noteId, convErr := strconv.Atoi(argument)
-      if convErr == nil {
-        parsedArgs.NoteId = noteId
+      if index == 2 {
+        noteId, convErr := strconv.Atoi(argument)
+        if convErr == nil {
+          parsedArgs.NoteId = noteId
+        }
       }
     }
   }

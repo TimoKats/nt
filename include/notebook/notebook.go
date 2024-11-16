@@ -48,7 +48,6 @@ func ClearNotebook(arguments Arguments) error {
 }
 
 func ReadNotebook(arguments Arguments) error {
-  Info.Printf("hey hallo: %v", NtConfig)
   if argumentsEmpty(arguments) { formatSummaryHeader() }
   for index, note := range Notes.Notes {
     if noteSelected(index, note, arguments) || argumentsEmpty(arguments) {
