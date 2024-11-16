@@ -40,7 +40,7 @@ func PushNotebook(notebook Notebook) error {
   if responseErr != nil || resp.StatusCode != 200 {
     Error.Printf("%s", resp.Status)
   } else {
-    Info.Printf("\033[32m" + "[%d] Pushed %d notes to server." + "\033[0m", resp.StatusCode, len(notebook.Notes))
+    Info.Printf("[%d] Pushed %d notes to server.", resp.StatusCode, len(notebook.Notes))
   }
   return responseErr
 }
