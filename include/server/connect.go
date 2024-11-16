@@ -29,7 +29,7 @@ func PushNotebook(notebook Notebook) error {
 
   // create request
   req, requestErr := http.NewRequest("POST", formatUrl("push"), bytes.NewBuffer(jsonData))
-  if requestErr != nil { return requestErr }
+  if requestErr != nil || req == nil { return requestErr }
   req.Header.Set("Content-Type", "application/json")
   username, password := promptAuth()
   req.SetBasicAuth(username, password)
@@ -37,7 +37,9 @@ func PushNotebook(notebook Notebook) error {
 
   // execute the request and handle response
   resp, responseErr := client.Do(req)
-  if responseErr != nil || resp.StatusCode != 200 {
+  if resp == nil {
+    // no internet connection
+  } else if responseErr != nil || resp.StatusCode != 200 {
     Error.Printf("%s", resp.Status)
   } else {
     Info.Printf("[%d] Pushed %d notes to server.", resp.StatusCode, len(notebook.Notes))
@@ -75,7 +77,7 @@ func PullNotebook() (Notebook, error) {
   return notebook, jsonErr
 }
 
-func PingNotebook(notebook Notebook) error {
+func PingServer() error {
   // check prerequisites
   if len(NtConfig.Server.Url) == 0 {
     return errors.New("No URL provided in config.")

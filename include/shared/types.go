@@ -10,6 +10,8 @@ type CommandType int
 
 const (
   None CommandType = iota
+
+  // notebook
   Add
   List
   Move
@@ -18,8 +20,10 @@ const (
   Server
   Comment
 
+  // server
   Pull
   Push
+  Ping
 )
 
 type Arguments struct {

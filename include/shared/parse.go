@@ -16,26 +16,30 @@ func readClipboard() string {
 
 func GetCommand(argument string) CommandType {
   switch argument {
-  case "add", "a":
-    return Add
-  case "ls", "l":
-    return List
-  case "remove", "rm":
-    return Clear
-  case "move", "mv":
-    return Move
-  case "comment", "cmt":
-    return Comment
-  case "tags", "tag":
-    return Tags
-  case "run":
-    return Server
-  case "pull":
-    return Pull
-  case "push":
-    return Push
-  default:
-    return None
+    // notebook
+    case "add", "a":
+      return Add
+    case "ls", "l":
+      return List
+    case "remove", "rm":
+      return Clear
+    case "move", "mv":
+      return Move
+    case "comment", "cmt":
+      return Comment
+    case "tags", "tag":
+      return Tags
+    // server
+    case "run":
+      return Server
+    case "pull":
+      return Pull
+    case "push":
+      return Push
+    case "ping":
+      return Ping
+    default:
+      return None
   }
 }
 
