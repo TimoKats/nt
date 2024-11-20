@@ -18,6 +18,7 @@ const (
   Tags
   Clear
   Server
+  Search
   Comment
 
   // server
@@ -62,6 +63,7 @@ type Authentication struct {
 
 type NotebookConfig struct {
   Width int `toml:"width"`
+  DateFormats []string `toml:"date_format"`
 }
 
 type ServerConfig struct {

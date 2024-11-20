@@ -24,6 +24,8 @@ func run(arguments Arguments) error {
       return notebook.AddComment(arguments)
     case Tags:
       return notebook.ReadTags(arguments)
+    case Search:
+      return nil
     // server related
     case Server:
       return server.RunServer()

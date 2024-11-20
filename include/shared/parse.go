@@ -30,6 +30,8 @@ func GetCommand(argument string) CommandType {
       return Comment
     case "tags", "tag":
       return Tags
+    case "s", "search":
+      return Search
     // server
     case "run":
       return Server

@@ -38,7 +38,7 @@ func PushNotebook(notebook Notebook) error {
   // execute the request and handle response
   resp, responseErr := client.Do(req)
   if resp == nil {
-    // no internet connection
+    Error.Println("No internet connection.")
   } else if responseErr != nil || resp.StatusCode != 200 {
     Error.Printf("%s", resp.Status)
   } else {
@@ -89,7 +89,11 @@ func PingServer() error {
 
   // execute the request and handle response
   resp, responseErr := client.Do(req)
-  Info.Printf("%s.", resp.Status)
+  if resp == nil {
+    Error.Println("No internet connection.")
+  } else {
+    Info.Printf("%s.", resp.Status)
+  }
   return errors.Join(responseErr, requestErr);
 }
 
