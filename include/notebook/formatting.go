@@ -1,10 +1,13 @@
 package include
 
 import (
+  "github.com/atotto/clipboard"
+
   . "github.com/TimoKats/nt/include/shared"
 
-  "github.com/atotto/clipboard"
+  "strconv"
   "strings"
+  "time"
 )
 
 func formatDone(taskDone bool) string {
@@ -39,18 +42,35 @@ func formatTags(tags []string) string {
   return formattedTags
 }
 
+func formatId(index int) string {
+  var strId string = strconv.Itoa(index)
+  for len(strId) < 3 {
+    strId += " "
+  }
+  return strId
+}
+
+func formatDeadline(deadline time.Time) string {
+  if !deadline.IsZero() {
+    return deadline.Format("2006-01-02")
+  }
+  return "          "
+}
+
 func formatSummaryOutput(index int, note *Note) {
+  id := formatId(index)
   done := formatDone(note.Done)
   text := formatSummaryText(note.Text)
   tags := formatTags(note.Tags)
-  Info.Println(index, "  ", done, "  ", text, "  ", tags)
+  deadline := formatDeadline(note.Deadline)
+  Info.Println(id, "  ", done, "  ", text, "  ", deadline, " ", tags)
 }
 
 func formatSummaryHeader() {
   headerWidth := strings.Repeat(" ", NtConfig.Notebook.Width)
   seperatorWidth := strings.Repeat("-", NtConfig.Notebook.Width)
-  Info.Printf("Id   Done   Text%s Tags", headerWidth)
-  Info.Printf("---- ------ ----%s ---------", seperatorWidth)
+  Info.Printf("Id   Done   Text%s Deadline   Tags ", headerWidth)
+  Info.Printf("---- ------ ----%s ---------- -----------", seperatorWidth)
 }
 
 func formatSingleOutput(note *Note) {
@@ -60,13 +80,5 @@ func formatSingleOutput(note *Note) {
   for _, comment := range note.Comments {
     Info.Println("-", comment[2:])
   }
-}
-
-func FormatInfo() error {
-  Info.Println(`Commands:
-    - test
-    - test
-  `)
-  return nil
 }
 

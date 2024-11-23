@@ -79,6 +79,7 @@ func AddNote(arguments Arguments) error {
     Text: arguments.Text,
     Created: time.Now(),
     Tags: arguments.Tags,
+    Deadline: arguments.Deadline,
   }
   Notes.Notes = append(Notes.Notes, &note)
   writeErr := WriteNotebook(Notes)

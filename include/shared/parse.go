@@ -53,6 +53,20 @@ func isFlag(argument string) bool {
   return false
 }
 
+func enrichArgs(argument string, parsedArgs *Arguments) {
+  if string(argument[0]) == "@" {
+    parsedArgs.Tags = append(parsedArgs.Tags, argument)
+  } else if argument == "c:" {
+    parsedArgs.Text += readClipboard()
+  } else if strings.HasPrefix(argument, "due:") {
+    parsedArgs.Deadline = ParseDate(argument)
+  } else if isFlag(argument) {
+    parsedArgs.Flags = append(parsedArgs.Flags, argument)
+  } else {
+    parsedArgs.Text += argument + " "
+  }
+}
+
 func ParseArgs(arguments []string) Arguments {
   var parsedArgs Arguments
   // set some defaults
@@ -61,16 +75,9 @@ func ParseArgs(arguments []string) Arguments {
     for _, argument := range strings.Fields(multiArgument) {
       if index == 1 {
         parsedArgs.Command = GetCommand(argument)
-      } else if index > 1 {
-        if string(argument[0]) == "@" {
-          parsedArgs.Tags = append(parsedArgs.Tags, argument)
-        } else if string(argument) == "*c" {
-          parsedArgs.Text += readClipboard()
-        } else if isFlag(argument) {
-          parsedArgs.Flags = append(parsedArgs.Flags, argument)
-        } else {
-          parsedArgs.Text += argument + " "
-        }
+      }
+      if index > 1 {
+        enrichArgs(argument, &parsedArgs)
       }
       if index == 2 {
         noteId, convErr := strconv.Atoi(argument)

@@ -15,10 +15,8 @@ var NtConfigErr error
 
 func NtDir() (string, error) {
   homedir, dirErr := os.UserHomeDir()
-  var createErr error = nil
-  if dirErr != nil {
-    return "", dirErr
-  }
+  var createErr error
+  if dirErr != nil { return "", dirErr }
   if _, fileErr := os.Stat(homedir + "/.nt/"); os.IsNotExist(fileErr) {
     createErr = os.MkdirAll(homedir + "/.nt/", 0755)
   }
@@ -72,7 +70,7 @@ func LoadConfig() (Config, error) {
   return NtConfig, fileErr
 }
 
-func init() {
+func init() { // NOTE: refactor this!
   NtPath, NtPathErr = NtDir()
   NtConfig, NtConfigErr = LoadConfig()
 }

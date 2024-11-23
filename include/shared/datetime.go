@@ -6,14 +6,12 @@
 package include
 
 import (
-  . "github.com/TimoKats/nt/include/shared"
-
   "strconv"
   "errors"
   "time"
 )
 
-var current time.Time = time.Now() // NOTE: maybe don't use init then...
+var current time.Time = time.Now()
 
 func inferYear(date time.Time) int {
   var year int = current.Year()
@@ -68,7 +66,7 @@ func mapTimeframe(timeframe byte) int {
   }
 }
 
-func ParseDate(datestring string) (time.Time, error) {
+func parseDatetime(datestring string) (time.Time, error) {
   var date time.Time
   var dateErr error
   var dateformatType int = -1
@@ -82,7 +80,7 @@ func ParseDate(datestring string) (time.Time, error) {
   return inferDate(date, datestring, dateformatType), dateErr
 }
 
-func ParseTimeframe(timestring string) (time.Time, error) {
+func parseTimeframe(timestring string) (time.Time, error) {
   var date time.Time = current
   var convErr error
   var factor int = 0
@@ -92,5 +90,18 @@ func ParseTimeframe(timestring string) (time.Time, error) {
     return date, convErr
   }
   return date.AddDate(0, 0, factor * mapTimeframe(timestring[1])), nil
+}
+
+func ParseDate(argument string) time.Time {
+  var date time.Time
+  var dateErr error
+  argument = argument[4:len(argument)] // remove due:
+  if len(argument) == 2 {
+    date, dateErr = parseTimeframe(argument)
+  } else {
+    date, dateErr = parseDatetime(argument)
+  }
+  if dateErr != nil { Error.Println(dateErr) }
+  return date
 }
 

@@ -34,6 +34,7 @@ type Arguments struct {
   Tags []string
   Text string
   NoteId int
+  Deadline time.Time
 }
 
 // notebook
@@ -46,6 +47,7 @@ type Note struct {
   Due time.Time
   Tags []string
   Comments []string
+  Deadline time.Time
 }
 
 type Notebook struct {
