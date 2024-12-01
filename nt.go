@@ -10,12 +10,13 @@ import (
 )
 
 func run(arguments Arguments) error {
+  var pullErr error
   switch arguments.Command {
     // notebook related
     case Add:
       return notebook.AddNote(arguments)
     case List:
-      return notebook.ReadNotebook(arguments)
+      return notebook.ListNotebook(arguments)
     case Clear:
       return notebook.ClearNotebook(arguments)
     case Move:
@@ -24,8 +25,10 @@ func run(arguments Arguments) error {
       return notebook.AddComment(arguments)
     case Tags:
       return notebook.ReadTags(arguments)
+    case Modify:
+      return notebook.ModifyNote(arguments)
     case Search:
-      return nil
+      return notebook.SearchNote(arguments)
     // server related
     case Server:
       return server.RunServer()
@@ -34,7 +37,6 @@ func run(arguments Arguments) error {
     case Ping:
       return server.PingServer()
     case Pull:
-      var pullErr error
       notebook.Notes, pullErr = server.PullNotebook()
       return pullErr
     default:

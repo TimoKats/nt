@@ -19,6 +19,7 @@ const (
   Clear
   Server
   Search
+  Modify
   Comment
 
   // server
@@ -33,7 +34,7 @@ type Arguments struct {
   Flags []string
   Tags []string
   Text string
-  NoteId int
+  NoteIds []int // make this a string? > or do the conv directly and make slice
   Deadline time.Time
 }
 
@@ -66,6 +67,7 @@ type Authentication struct {
 type NotebookConfig struct {
   Width int `toml:"width"`
   DateFormats []string `toml:"date_format"`
+  LsDefault string `toml:"ls_default"`
 }
 
 type ServerConfig struct {

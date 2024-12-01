@@ -23,11 +23,16 @@ func removeIndex(s []*Note, index int) []*Note {
   return append(s[:index], s[index+1:]...)
 }
 
-func contains(slice []string, item string) bool {
+func containsInt(slice []int, item int) bool {
   for _, v := range slice {
-    if v == item {
-      return true
-    }
+    if v == item { return true }
+  }
+  return false
+}
+
+func contains(slice []string, item string) bool { // rename to containsStr
+  for _, v := range slice {
+    if v == item { return true }
   }
   return false
 }

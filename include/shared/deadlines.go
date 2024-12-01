@@ -95,7 +95,7 @@ func parseTimeframe(timestring string) (time.Time, error) {
 func ParseDate(argument string) time.Time {
   var date time.Time
   var dateErr error
-  argument = argument[4:len(argument)] // remove due:
+  argument = argument[5:len(argument)] // remove due:
   if len(argument) == 2 {
     date, dateErr = parseTimeframe(argument)
   } else {

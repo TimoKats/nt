@@ -18,12 +18,13 @@ func formatDone(taskDone bool) string {
 }
 
 func formatSummaryText(text string) string {
+  var maxLength int = NtConfig.Notebook.Width + 1
+  var spaces int = 0
   text = strings.Replace(text, "\n", " ", -1)
-  maxLength := NtConfig.Notebook.Width + 1
   if len(text) > maxLength {
     return text[:maxLength]
   }
-  spaces := (maxLength - len(text))
+  spaces = (maxLength - len(text))
   for i := 0; i < spaces; i++ {
     text += " "
   }
@@ -31,7 +32,7 @@ func formatSummaryText(text string) string {
 }
 
 func formatTags(tags []string) string {
-  formattedTags := ""
+  var formattedTags string = ""
   for index, tag := range tags {
     if index < len(tags) - 1 {
       formattedTags += tag + ", "
@@ -44,7 +45,7 @@ func formatTags(tags []string) string {
 
 func formatId(index int) string {
   var strId string = strconv.Itoa(index)
-  for len(strId) < 3 {
+  for len(strId) < 4 {
     strId += " "
   }
   return strId
@@ -58,19 +59,19 @@ func formatDeadline(deadline time.Time) string {
 }
 
 func formatSummaryOutput(index int, note *Note) {
-  id := formatId(index)
-  done := formatDone(note.Done)
-  text := formatSummaryText(note.Text)
-  tags := formatTags(note.Tags)
-  deadline := formatDeadline(note.Deadline)
-  Info.Println(id, "  ", done, "  ", text, "  ", deadline, " ", tags)
+  var id string = formatId(index)
+  var done string = formatDone(note.Done)
+  var text string = formatSummaryText(note.Text)
+  var tags string = formatTags(note.Tags)
+  var deadline string = formatDeadline(note.Deadline)
+  Info.Println(id, done, "  ", text, "  ", deadline, " ", tags)
 }
 
 func formatSummaryHeader() {
   headerWidth := strings.Repeat(" ", NtConfig.Notebook.Width)
   seperatorWidth := strings.Repeat("-", NtConfig.Notebook.Width)
-  Info.Printf("Id   Done   Text%s Deadline   Tags ", headerWidth)
-  Info.Printf("---- ------ ----%s ---------- -----------", seperatorWidth)
+  Info.Printf("Id   Done   Text%s Deadline    Tags ", headerWidth)
+  Info.Printf("---- ------ ----%s ----------- -----------", seperatorWidth)
 }
 
 func formatSingleOutput(note *Note) {

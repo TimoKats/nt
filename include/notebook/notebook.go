@@ -3,6 +3,8 @@ package include
 import (
   . "github.com/TimoKats/nt/include/shared"
 
+  "strings"
+  "errors"
   "time"
 )
 
@@ -12,11 +14,15 @@ var LoadErr error
 func noteSelected(index int, note *Note, arguments Arguments) bool {
   if hasOverlap(arguments.Tags, note.Tags) {
     return true
-  } else if arguments.NoteId == index {
+  } else if containsInt(arguments.NoteIds, index) {
     return true
   } else if contains(arguments.Flags, "--done") && note.Done {
     return true
   } else if contains(arguments.Flags, "--old") && !fromToday(note) {
+    return true
+  } else if contains(arguments.Flags, "--today") && fromToday(note) {
+    return true
+  } else if contains(arguments.Flags, "--all") {
     return true
   }
   return false
@@ -27,7 +33,7 @@ func argumentsEmpty(arguments Arguments) bool {
     len(arguments.Text) == 0 &&
     len(arguments.Tags) == 0 &&
     len(arguments.Flags) == 0 &&
-    arguments.NoteId == -1)
+    len(arguments.NoteIds) == 0)
 }
 
 func ClearNotebook(arguments Arguments) error {
@@ -47,13 +53,13 @@ func ClearNotebook(arguments Arguments) error {
   return writeErr
 }
 
-func ReadNotebook(arguments Arguments) error {
-  if argumentsEmpty(arguments) { formatSummaryHeader() }
+func ListNotebook(arguments Arguments) error {
+  if len(arguments.NoteIds) != 1 { formatSummaryHeader() }
   for index, note := range Notes.Notes {
     if noteSelected(index, note, arguments) || argumentsEmpty(arguments) {
-      if arguments.NoteId == -1 {
+      if len(arguments.NoteIds) != 1 {
         formatSummaryOutput(index, note)
-      } else if arguments.NoteId == index {
+      } else if containsInt(arguments.NoteIds, index) {
         formatSingleOutput(note)
       }
     }
@@ -88,7 +94,7 @@ func AddNote(arguments Arguments) error {
 
 func MoveNote(arguments Arguments) error {
   for index, note := range Notes.Notes {
-    if arguments.NoteId == index {
+    if containsInt(arguments.NoteIds, index) {
       Notes.Notes[index].Done = !note.Done
     }
   }
@@ -96,9 +102,38 @@ func MoveNote(arguments Arguments) error {
   return writeErr
 }
 
+func SearchNote(arguments Arguments) error {
+  arguments.Flags = []string{}
+  var listErr error
+  for index, note := range Notes.Notes {
+    for _, query := range strings.Fields(arguments.Text) {
+      if strings.Contains(note.Text, query) {
+        arguments.NoteIds = append(arguments.NoteIds, index)
+        break
+      }
+    }
+  }
+  listErr = ListNotebook(arguments)
+  return listErr
+}
+
+func ModifyNote(arguments Arguments) error {
+  if len(arguments.NoteIds) == 0 {
+    return errors.New("No NoteId provided")
+  }
+  if arguments.NoteIds[0] > len(Notes.Notes) || arguments.NoteIds[0] < 0 {
+    return errors.New("NoteId does not exist.")
+  }
+  Notes.Notes[arguments.NoteIds[0]].Text = arguments.Text[2:]
+  Notes.Notes[arguments.NoteIds[0]].Tags = arguments.Tags
+  Notes.Notes[arguments.NoteIds[0]].Deadline = arguments.Deadline
+  writeErr := WriteNotebook(Notes)
+  return writeErr
+}
+
 func AddComment(arguments Arguments) error {
   for index, note := range Notes.Notes {
-    if arguments.NoteId == index {
+    if containsInt(arguments.NoteIds, index) {
       Notes.Notes[index].Comments = append(note.Comments, arguments.Text)
     }
   }
@@ -107,6 +142,6 @@ func AddComment(arguments Arguments) error {
 }
 
 func init()  {
-  Notes, LoadErr = LoadNotebook()
+  Notes, LoadErr = LoadNotebook() // NOTE: refactor this!
 }
 
