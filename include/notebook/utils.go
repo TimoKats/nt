@@ -4,8 +4,6 @@ import (
   . "github.com/TimoKats/nt/include/shared"
 
   "time"
-  "regexp"
-  "strconv"
 )
 
 func hasOverlap(list1 []string, list2 []string) bool {
@@ -30,25 +28,11 @@ func containsInt(slice []int, item int) bool {
   return false
 }
 
-func contains(slice []string, item string) bool { // rename to containsStr
+func containsStr(slice []string, item string) bool {
   for _, v := range slice {
     if v == item { return true }
   }
   return false
-}
-
-func extractInts(input string) int {
-  extractedInts := ""
-  re := regexp.MustCompile(`\d+`)
-  matches := re.FindAllString(input, -1)
-  for _, match := range matches {
-    extractedInts += match
-  }
-  num, convErr := strconv.Atoi(extractedInts)
-  if convErr != nil {
-    return -1
-  }
-  return num
 }
 
 func fromToday(note *Note) bool {

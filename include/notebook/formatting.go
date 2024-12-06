@@ -1,8 +1,6 @@
 package include
 
 import (
-  "github.com/atotto/clipboard"
-
   . "github.com/TimoKats/nt/include/shared"
 
   "strconv"
@@ -19,7 +17,7 @@ func formatDone(taskDone bool) string {
 
 func formatSummaryText(text string) string {
   var maxLength int = NtConfig.Notebook.Width + 1
-  var spaces int = 0
+  var spaces int
   text = strings.Replace(text, "\n", " ", -1)
   if len(text) > maxLength {
     return text[:maxLength]
@@ -75,7 +73,6 @@ func formatSummaryHeader() {
 }
 
 func formatSingleOutput(note *Note) {
-  clipboard.WriteAll(note.Text)
   Info.Println(note.Text)
   Info.Println("\n---------\nComments:")
   for _, comment := range note.Comments {

@@ -83,7 +83,7 @@ func parseDatetime(datestring string) (time.Time, error) {
 func parseTimeframe(timestring string) (time.Time, error) {
   var date time.Time = current
   var convErr error
-  var factor int = 0
+  var factor int
   if len(timestring) != 2 {
     return date, errors.New("timestring not correct format (should e.g. be '2d').")
   } else if factor, convErr = strconv.Atoi(string(timestring[0])); convErr != nil {
@@ -95,7 +95,7 @@ func parseTimeframe(timestring string) (time.Time, error) {
 func ParseDate(argument string) time.Time {
   var date time.Time
   var dateErr error
-  argument = argument[5:len(argument)] // remove due:
+  argument = argument[5:] // remove due:
   if len(argument) == 2 {
     date, dateErr = parseTimeframe(argument)
   } else {

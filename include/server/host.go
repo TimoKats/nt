@@ -47,6 +47,7 @@ func basicAuth(next http.Handler) http.HandlerFunc {
 
 func pushHandler(w http.ResponseWriter, r *http.Request) {
   var notebook Notebook
+  var writeErr error
   decoder := json.NewDecoder(r.Body)
   decodeErr := decoder.Decode(&notebook)
   if decodeErr != nil { http.Error(w, "Invalid json.", http.StatusBadRequest)
@@ -56,8 +57,12 @@ func pushHandler(w http.ResponseWriter, r *http.Request) {
     http.Error(w, "No notes found in payload.", http.StatusBadRequest)
     return
   }
-  WriteNotebook(notebook)
-  fmt.Fprintln(w, "Succesfully added", len(notebook.Notes), "notes.")
+  writeErr = WriteNotebook(notebook)
+  if writeErr != nil {
+    Error.Println(writeErr)
+  } else {
+    fmt.Fprintln(w, "Succesfully added", len(notebook.Notes), "notes.")
+  }
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
@@ -66,23 +71,22 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func pullHandler(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/json")
-  notebook, loadErr := LoadNotebook()
-  if loadErr != nil {
+  // LoadNotebook() TODO!
+  if NotesErr != nil {
     http.Error(w, "Error loading json from notebook.", http.StatusInternalServerError)
   }
-  if err := json.NewEncoder(w).Encode(notebook); err != nil {
+  if err := json.NewEncoder(w).Encode(Notes); err != nil {
     http.Error(w, "Error encoding json.", http.StatusInternalServerError)
   }
 }
 
 func RunServer() error {
-  if configErr := configauth(); configErr != nil {
-    return configErr
-  }
+  var serverErr error
+  if configErr := configauth(); configErr != nil { return configErr }
   http.Handle("/push", basicAuth(http.HandlerFunc(pushHandler)))
   http.Handle("/pull", basicAuth(http.HandlerFunc(pullHandler)))
   http.Handle("/ping", http.HandlerFunc(healthHandler))
   Warn.Printf("server started at %s", NtConfig.Server.Port)
-  http.ListenAndServe(NtConfig.Server.Port, nil)
-  return nil
+  serverErr = http.ListenAndServe(NtConfig.Server.Port, nil)
+  return serverErr
 }

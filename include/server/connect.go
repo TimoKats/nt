@@ -50,6 +50,7 @@ func PushNotebook(notebook Notebook) error {
 func PullNotebook() (Notebook, error) {
   // check prerequisites
   var notebook Notebook
+  var writeErr error
   if len(NtConfig.Server.Url) == 0 {
     return notebook, errors.New("No URL provided in config.")
   }
@@ -72,9 +73,9 @@ func PullNotebook() (Notebook, error) {
   jsonErr := json.NewDecoder(resp.Body).Decode(&notebook)
   if jsonErr == nil {
     Info.Printf("Pulled %d notes from server. %s.", len(notebook.Notes), resp.Status)
-    WriteNotebook(notebook)
+    writeErr = WriteNotebook(notebook)
   }
-  return notebook, jsonErr
+  return notebook, errors.Join(jsonErr, writeErr)
 }
 
 func PingServer() error {

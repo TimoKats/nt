@@ -6,6 +6,7 @@ import (
   . "github.com/TimoKats/nt/include/shared"
 
   "errors"
+  "sync"
   "os"
 )
 
@@ -33,24 +34,30 @@ func run(arguments Arguments) error {
     case Server:
       return server.RunServer()
     case Push:
-      return server.PushNotebook(notebook.Notes)
+      return server.PushNotebook(Notes)
     case Ping:
       return server.PingServer()
     case Pull:
-      notebook.Notes, pullErr = server.PullNotebook()
+      Notes, pullErr = server.PullNotebook()
       return pullErr
     default:
       return errors.New("No valid command found. Use <<ls, add, mv>>")
   }
 }
 
-func InitErrs() bool {
-  return errors.Join(NtPathErr, NtConfigErr) != nil
+func Setup() error {
+  var wg sync.WaitGroup
+  wg.Add(2)
+  SetNtDir()
+  go LoadConfig(&wg)
+  go LoadNotebook(&wg)
+  wg.Wait()
+  return errors.Join(NtPathErr, NtConfigErr, NotesErr)
 }
 
 func main() {
-  if initErr := errors.Join(NtPathErr, NtConfigErr); initErr != nil {
-    Error.Println(initErr)
+  if err := Setup(); err != nil {
+    Error.Println(err)
     return
   }
   arguments := ParseArgs(os.Args)

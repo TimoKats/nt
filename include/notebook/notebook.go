@@ -8,21 +8,18 @@ import (
   "time"
 )
 
-var Notes Notebook
-var LoadErr error
-
 func noteSelected(index int, note *Note, arguments Arguments) bool {
   if hasOverlap(arguments.Tags, note.Tags) {
     return true
   } else if containsInt(arguments.NoteIds, index) {
     return true
-  } else if contains(arguments.Flags, "--done") && note.Done {
+  } else if containsStr(arguments.Flags, "--done") && note.Done {
     return true
-  } else if contains(arguments.Flags, "--old") && !fromToday(note) {
+  } else if containsStr(arguments.Flags, "--old") && !fromToday(note) {
     return true
-  } else if contains(arguments.Flags, "--today") && fromToday(note) {
+  } else if containsStr(arguments.Flags, "--today") && fromToday(note) {
     return true
-  } else if contains(arguments.Flags, "--all") {
+  } else if containsStr(arguments.Flags, "--all") {
     return true
   }
   return false
@@ -74,8 +71,8 @@ func ReadTags(arguments Arguments) error {
       tags[tag] += 1
     }
   }
-  for tagname, _ := range tags {
-    Info.Println(tagname)
+  for tagname := range tags {
+     Info.Println(tagname)
   }
   return nil
 }
@@ -139,9 +136,5 @@ func AddComment(arguments Arguments) error {
   }
   writeErr := WriteNotebook(Notes)
   return writeErr
-}
-
-func init()  {
-  Notes, LoadErr = LoadNotebook() // NOTE: refactor this!
 }
 
