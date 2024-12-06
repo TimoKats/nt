@@ -1,3 +1,7 @@
+// Main control flow of the program. Loads the config file and notebook concurrently.
+// Reads command line input and calls the corresponding program after files have been
+// loaded succesfully.
+
 package main
 
 import (

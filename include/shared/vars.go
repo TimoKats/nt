@@ -1,5 +1,6 @@
-// Just a submodule to put all global vars so I can find them later on.
-// Nt prefix means it's created on setup.
+// Just a submodule to put all global vars so I can find them later on. Nt prefix means
+// it's created on setup.
+
 package include
 
 // loaded by fs

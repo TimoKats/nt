@@ -1,3 +1,6 @@
+// By far the worst module(?) Reads command line input and creates an argument object.
+// This includes the command, flags, tags, etc.
+
 package include
 
 import (

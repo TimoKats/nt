@@ -1,3 +1,5 @@
+// Creates logging objects upon start.
+
 package include
 
 import (

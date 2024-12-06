@@ -1,3 +1,5 @@
+// Types and enums (sort of...) used in nt. Categorized on submodule.
+
 package include
 
 import (

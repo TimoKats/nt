@@ -1,3 +1,6 @@
+// Interacts with the server you can host (with host.go). Pushing, pulling notebooks and
+// doing health checks.
+
 package include
 
 import (

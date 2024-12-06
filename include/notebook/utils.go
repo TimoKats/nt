@@ -1,3 +1,5 @@
+// Various util functions for the notebook. Mainly centers around slices.
+
 package include
 
 import (

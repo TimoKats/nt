@@ -1,3 +1,5 @@
+// Deals with prompting user for normal/sensitive data. Only used by the server submodule.
+
 package include
 
 import(

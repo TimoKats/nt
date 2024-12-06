@@ -1,3 +1,5 @@
+// Formatting/presenting the output from nt commands. Called by notebook.go.
+
 package include
 
 import (
@@ -9,9 +11,7 @@ import (
 )
 
 func formatDone(taskDone bool) string {
-  if taskDone {
-    return "[X]"
-  }
+  if taskDone { return "[X]" }
   return "[ ]"
 }
 
