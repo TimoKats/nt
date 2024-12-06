@@ -34,25 +34,25 @@ func argumentsEmpty(arguments Arguments) bool {
 }
 
 func ClearNotebook(arguments Arguments) error {
-  correctedIndex := 0
+  var correctedIndex int = 0
   if argumentsEmpty(arguments) {
-    Notes.Notes = []*Note{}
+    NtNotes.Notes = []*Note{}
   } else {
-    for index, note := range Notes.Notes {
+    for index, note := range NtNotes.Notes {
       if noteSelected(index, note, arguments) {
-        Notes.Notes = removeIndex(Notes.Notes, correctedIndex)
+        NtNotes.Notes = removeIndex(NtNotes.Notes, correctedIndex)
       } else {
         correctedIndex += 1
       }
     }
   }
-  writeErr := WriteNotebook(Notes)
+  writeErr := WriteNotebook(NtNotes)
   return writeErr
 }
 
 func ListNotebook(arguments Arguments) error {
   if len(arguments.NoteIds) != 1 { formatSummaryHeader() }
-  for index, note := range Notes.Notes {
+  for index, note := range NtNotes.Notes {
     if noteSelected(index, note, arguments) || argumentsEmpty(arguments) {
       if len(arguments.NoteIds) != 1 {
         formatSummaryOutput(index, note)
@@ -66,13 +66,13 @@ func ListNotebook(arguments Arguments) error {
 
 func ReadTags(arguments Arguments) error {
   tags := make(map[string]int)
-  for _, note := range Notes.Notes {
+  for _, note := range NtNotes.Notes {
     for _, tag := range note.Tags {
       tags[tag] += 1
     }
   }
   for tagname := range tags {
-     Info.Println(tagname)
+    Info.Println(tagname)
   }
   return nil
 }
@@ -84,33 +84,31 @@ func AddNote(arguments Arguments) error {
     Tags: arguments.Tags,
     Deadline: arguments.Deadline,
   }
-  Notes.Notes = append(Notes.Notes, &note)
-  writeErr := WriteNotebook(Notes)
+  NtNotes.Notes = append(NtNotes.Notes, &note)
+  var writeErr error = WriteNotebook(NtNotes)
   return writeErr
 }
 
 func MoveNote(arguments Arguments) error {
-  for index, note := range Notes.Notes {
+  for index, note := range NtNotes.Notes {
     if containsInt(arguments.NoteIds, index) {
-      Notes.Notes[index].Done = !note.Done
+      NtNotes.Notes[index].Done = !note.Done
     }
   }
-  writeErr := WriteNotebook(Notes)
+  var writeErr error = WriteNotebook(NtNotes)
   return writeErr
 }
 
 func SearchNote(arguments Arguments) error {
   arguments.Flags = []string{}
-  var listErr error
-  for index, note := range Notes.Notes {
+  for index, note := range NtNotes.Notes {
     for _, query := range strings.Fields(arguments.Text) {
       if strings.Contains(note.Text, query) {
-        arguments.NoteIds = append(arguments.NoteIds, index)
-        break
+        arguments.NoteIds = append(arguments.NoteIds, index); break
       }
     }
   }
-  listErr = ListNotebook(arguments)
+  var listErr error = ListNotebook(arguments)
   return listErr
 }
 
@@ -118,23 +116,23 @@ func ModifyNote(arguments Arguments) error {
   if len(arguments.NoteIds) == 0 {
     return errors.New("No NoteId provided")
   }
-  if arguments.NoteIds[0] > len(Notes.Notes) || arguments.NoteIds[0] < 0 {
+  if arguments.NoteIds[0] > len(NtNotes.Notes) || arguments.NoteIds[0] < 0 {
     return errors.New("NoteId does not exist.")
   }
-  Notes.Notes[arguments.NoteIds[0]].Text = arguments.Text[2:]
-  Notes.Notes[arguments.NoteIds[0]].Tags = arguments.Tags
-  Notes.Notes[arguments.NoteIds[0]].Deadline = arguments.Deadline
-  writeErr := WriteNotebook(Notes)
+  NtNotes.Notes[arguments.NoteIds[0]].Text = arguments.Text[2:]
+  NtNotes.Notes[arguments.NoteIds[0]].Tags = arguments.Tags
+  NtNotes.Notes[arguments.NoteIds[0]].Deadline = arguments.Deadline
+  var writeErr error = WriteNotebook(NtNotes)
   return writeErr
 }
 
 func AddComment(arguments Arguments) error {
-  for index, note := range Notes.Notes {
+  for index, note := range NtNotes.Notes {
     if containsInt(arguments.NoteIds, index) {
-      Notes.Notes[index].Comments = append(note.Comments, arguments.Text)
+      NtNotes.Notes[index].Comments = append(note.Comments, arguments.Text)
     }
   }
-  writeErr := WriteNotebook(Notes)
+  var writeErr error = WriteNotebook(NtNotes)
   return writeErr
 }
 

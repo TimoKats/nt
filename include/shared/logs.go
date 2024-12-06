@@ -13,11 +13,6 @@ var (
   Fatal *log.Logger
 )
 
-var Reset = "\033[0m"
-var Red = "\033[31m"
-var Yellow = "\033[33m"
-var Magenta = "\033[35m"
-
 func init() {
   Info = log.New(os.Stdout, "", 0)
   Warn = log.New(os.Stdout, Yellow + "warn:  " + Reset, 0)

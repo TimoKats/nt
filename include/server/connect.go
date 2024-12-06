@@ -14,16 +14,14 @@ func formatUrl(path string) string {
 }
 
 func promptAuth() (string, string) {
-  username := InsecureInput("[1/2] Set username for nts: ")
-  password := SecureInput("[2/2] Set password for nts: ")
+  var username []byte = InsecureInput("[1/2] Set username for nts: ")
+  var password []byte = SecureInput("[2/2] Set password for nts: ")
   return string(username), string(password)
 }
 
 func PushNotebook(notebook Notebook) error {
   // check prerequisites
-  if len(NtConfig.Server.Url) == 0 {
-    return errors.New("No URL provided in config.")
-  }
+  if len(NtConfig.Server.Url) == 0 { return errors.New("No URL in config.") }
   jsonData, jsonErr := json.Marshal(notebook)
   if jsonErr != nil { return jsonErr }
 
@@ -63,9 +61,7 @@ func PullNotebook() (Notebook, error) {
 
   // execute the request and handle response
   resp, requestErr := client.Do(req)
-  if requestErr != nil {
-    return notebook, requestErr
-  }
+  if requestErr != nil { return notebook, requestErr }
   if resp.StatusCode != http.StatusOK {
     Info.Println(resp.StatusCode, resp)
     return notebook, errors.New("Status code implies failed request.")

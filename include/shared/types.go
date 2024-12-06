@@ -34,7 +34,7 @@ type Arguments struct {
   Flags []string
   Tags []string
   Text string
-  NoteIds []int // make this a string? > or do the conv directly and make slice
+  NoteIds []int
   Deadline time.Time
 }
 

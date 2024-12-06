@@ -9,10 +9,10 @@ import (
 )
 
 func readClipboard() string {
-  clipboardText, readErr := clipboard.ReadAll()
-  if readErr != nil {
-    return ""
-  }
+  var clipboardText string
+  var readErr error
+  clipboardText, readErr = clipboard.ReadAll()
+  if readErr != nil { return "" }
   return string(clipboardText)
 }
 
@@ -40,7 +40,7 @@ func parseNoteIds(argument string) []int {
   return noteIds
 }
 
-func GetCommand(argument string) CommandType {
+func getCommand(argument string) CommandType {
   switch argument {
     // notebook
     case "add", "a":
@@ -91,7 +91,7 @@ func ParseArgs(arguments []string) Arguments {
   var parsedArgs Arguments
   for index, multiArgument := range arguments { // sometimes "" protect args on windows
     for _, argument := range strings.Fields(multiArgument) {
-      if index == 1 { parsedArgs.Command = GetCommand(argument) }
+      if index == 1 { parsedArgs.Command = getCommand(argument) }
       if index > 1 { enrichArgs(argument, &parsedArgs) }
       if index == 2 { parsedArgs.NoteIds = parseNoteIds(argument) }
     }

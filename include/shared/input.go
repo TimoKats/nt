@@ -8,7 +8,6 @@ import(
   "os"
 )
 
-var Cyan = "\033[34m"
 
 func InsecureInput(message string) []byte {
   var command []byte

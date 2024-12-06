@@ -34,35 +34,30 @@ func run(arguments Arguments) error {
     case Server:
       return server.RunServer()
     case Push:
-      return server.PushNotebook(Notes)
+      return server.PushNotebook(NtNotes)
     case Ping:
       return server.PingServer()
     case Pull:
-      Notes, pullErr = server.PullNotebook()
+      NtNotes, pullErr = server.PullNotebook()
       return pullErr
     default:
       return errors.New("No valid command found. Use <<ls, add, mv>>")
   }
 }
 
-func Setup() error {
+func setup() error {
   var wg sync.WaitGroup
   wg.Add(2)
   SetNtDir()
   go LoadConfig(&wg)
   go LoadNotebook(&wg)
   wg.Wait()
-  return errors.Join(NtPathErr, NtConfigErr, NotesErr)
+  return errors.Join(NtPathErr, NtConfigErr, NtNotesErr)
 }
 
 func main() {
-  if err := Setup(); err != nil {
-    Error.Println(err)
-    return
-  }
-  arguments := ParseArgs(os.Args)
-  runErr := run(arguments)
-  if runErr != nil {
-    Error.Println(runErr)
-  }
+  if err := setup(); err != nil { Error.Println(err); return }
+  var arguments Arguments = ParseArgs(os.Args)
+  var runErr error = run(arguments)
+  if runErr != nil { Error.Println(runErr) }
 }

@@ -15,9 +15,9 @@ import (
 var auth Authentication
 
 func configauth() error {
-  username := InsecureInput("[1/3] Set username for nts: ")
-  password := SecureInput("[2/3] Set password for nts: ")
-  passwordCheck := SecureInput("[3/3] Repeat password:      ")
+  var username []byte = InsecureInput("[1/3] Set username for nts: ")
+  var password []byte = SecureInput("[2/3] Set password for nts: ")
+  var passwordCheck []byte = SecureInput("[3/3] Repeat password:      ")
   if string(password) != string(passwordCheck) {
     return errors.New("Passwords don't match.")
   }
@@ -26,17 +26,24 @@ func configauth() error {
   return nil
 }
 
+func okAuth(username string, password string) bool {
+  usernameHash := sha256.Sum256([]byte(username))
+  passwordHash := sha256.Sum256([]byte(password))
+  expectedUsernameHash := sha256.Sum256(auth.Username)
+  expectedPasswordHash := sha256.Sum256(auth.Password)
+  usernameMatch := (subtle.ConstantTimeCompare(usernameHash[:], expectedUsernameHash[:]) == 1)
+  passwordMatch := (subtle.ConstantTimeCompare(passwordHash[:], expectedPasswordHash[:]) == 1)
+  return usernameMatch && passwordMatch
+}
+
 func basicAuth(next http.Handler) http.HandlerFunc {
+  var username string
+  var password string
+  var ok bool // used to see if basicAuth works
   return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    username, password, ok := r.BasicAuth()
+    username, password, ok = r.BasicAuth()
     if ok {
-      usernameHash := sha256.Sum256([]byte(username))
-      passwordHash := sha256.Sum256([]byte(password))
-      expectedUsernameHash := sha256.Sum256(auth.Username)
-      expectedPasswordHash := sha256.Sum256(auth.Password)
-      usernameMatch := (subtle.ConstantTimeCompare(usernameHash[:], expectedUsernameHash[:]) == 1)
-      passwordMatch := (subtle.ConstantTimeCompare(passwordHash[:], expectedPasswordHash[:]) == 1)
-      if usernameMatch && passwordMatch {
+      if okAuth(username, password) {
         next.ServeHTTP(w, r)
         return
       }
@@ -48,14 +55,13 @@ func basicAuth(next http.Handler) http.HandlerFunc {
 func pushHandler(w http.ResponseWriter, r *http.Request) {
   var notebook Notebook
   var writeErr error
-  decoder := json.NewDecoder(r.Body)
-  decodeErr := decoder.Decode(&notebook)
-  if decodeErr != nil { http.Error(w, "Invalid json.", http.StatusBadRequest)
-    return
+  var decoder *json.Decoder = json.NewDecoder(r.Body)
+  var decodeErr error = decoder.Decode(&notebook)
+  if decodeErr != nil {
+    http.Error(w, "Invalid json.", http.StatusBadRequest); return
   }
   if len(notebook.Notes) == 0 {
-    http.Error(w, "No notes found in payload.", http.StatusBadRequest)
-    return
+    http.Error(w, "No notes found in payload.", http.StatusBadRequest); return
   }
   writeErr = WriteNotebook(notebook)
   if writeErr != nil {
@@ -71,11 +77,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 func pullHandler(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/json")
-  // LoadNotebook() TODO!
-  if NotesErr != nil {
-    http.Error(w, "Error loading json from notebook.", http.StatusInternalServerError)
-  }
-  if err := json.NewEncoder(w).Encode(Notes); err != nil {
+  if err := json.NewEncoder(w).Encode(NtNotes); err != nil {
     http.Error(w, "Error encoding json.", http.StatusInternalServerError)
   }
 }

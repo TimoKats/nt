@@ -9,12 +9,7 @@ import (
   "os"
 )
 
-var NtPath string
-var NtPathErr error
-var NtConfig Config
-var NtConfigErr error
-var Notes Notebook
-var NotesErr error // NOTE: Maybe predefine global errors and call them?
+// nt home dir (~/.nt)
 
 func SetNtDir() {
   homedir, dirErr := os.UserHomeDir()
@@ -24,6 +19,8 @@ func SetNtDir() {
   }
   NtPath = homedir + "/.nt/"
 }
+
+// notebook
 
 func WriteNotebook(notebook Notebook) error {
   jsonData, jsonErr := json.Marshal(&notebook)
@@ -38,11 +35,13 @@ func LoadNotebook(wg *sync.WaitGroup) {
   defer wg.Done()
   jsonFile, fileErr := os.ReadFile(NtPath + "notebook.json")
   if fileErr == nil {
-    NotesErr = json.Unmarshal(jsonFile, &Notes)
+    NtNotesErr = json.Unmarshal(jsonFile, &NtNotes)
   } else if errors.Is(fileErr, os.ErrNotExist) {
     Warn.Println("No notebook found. Will create new file on save.")
   }
 }
+
+// config
 
 func defaultConfig() Config {
   return Config {

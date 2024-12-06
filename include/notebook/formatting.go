@@ -66,8 +66,8 @@ func formatSummaryOutput(index int, note *Note) {
 }
 
 func formatSummaryHeader() {
-  headerWidth := strings.Repeat(" ", NtConfig.Notebook.Width)
-  seperatorWidth := strings.Repeat("-", NtConfig.Notebook.Width)
+  var headerWidth string = strings.Repeat(" ", NtConfig.Notebook.Width)
+  var seperatorWidth string = strings.Repeat("-", NtConfig.Notebook.Width)
   Info.Printf("Id   Done   Text%s Deadline    Tags ", headerWidth)
   Info.Printf("---- ------ ----%s ----------- -----------", seperatorWidth)
 }

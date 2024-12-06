@@ -9,9 +9,7 @@ import (
 func hasOverlap(list1 []string, list2 []string) bool {
   for _, item1 := range list1 {
     for _, item2 := range list2 {
-      if item1 == item2 {
-        return true
-      }
+      if item1 == item2 { return true }
     }
   }
   return false
