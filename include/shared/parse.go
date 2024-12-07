@@ -1,5 +1,6 @@
 // By far the worst module(?) Reads command line input and creates an argument object.
-// This includes the command, flags, tags, etc.
+// This includes the command, flags, tags, etc. The function ParseArgs is called by the
+// main module, the other functions are called by that function to extract the given args.
 
 package include
 
@@ -43,6 +44,11 @@ func parseNoteIds(argument string) []int {
   return noteIds
 }
 
+func parseTag(tag string) string {
+  if strings.HasPrefix(tag, "@") { return tag[1:] }
+  return tag[5:]
+}
+
 func getCommand(argument string) CommandType {
   switch argument {
     // notebook
@@ -77,8 +83,9 @@ func getCommand(argument string) CommandType {
 }
 
 func enrichArgs(argument string, parsedArgs *Arguments) {
-  if string(argument[0]) == "@" {
-    parsedArgs.Tags = append(parsedArgs.Tags, argument)
+  if strings.HasPrefix(argument, "@") || strings.HasPrefix(argument, ":tag:") {
+    var tag string = parseTag(argument)
+    parsedArgs.Tags = append(parsedArgs.Tags, tag)
   } else if argument == ":c" {
     parsedArgs.Text += readClipboard()
   } else if strings.HasPrefix(argument, ":due:") {

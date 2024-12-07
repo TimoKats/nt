@@ -47,7 +47,7 @@ func LoadNotebook(wg *sync.WaitGroup) {
 // config
 
 func defaultConfig() Config {
-  return Config {
+  return Config { // put in vars?
     Server: ServerConfig {
       Url: "",
       Port: ":8282",

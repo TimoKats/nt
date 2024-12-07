@@ -28,7 +28,7 @@ func inferMonth(date time.Time) time.Month {
 func inferDay(datestring string) time.Time {
   var date time.Time = current // don't want to change current var
   var increments int = 0 // used to prevent eternal loop.
-  for date.Weekday().String()[0:3] != datestring || increments > 7 {
+  for date.Weekday().String()[0:3] != datestring && increments < 7 {
     date = date.AddDate(0, 0, 1)
     increments += 1
   }
