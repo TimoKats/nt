@@ -26,6 +26,7 @@ func SetNtDir() {
 // notebook
 
 func WriteNotebook(notebook Notebook) error {
+  if TestMode { return nil } // no r/w in github actions.
   jsonData, jsonErr := json.Marshal(&notebook)
   writeErr := os.WriteFile(NtPath + "notebook.json", jsonData, 0644)
   if err := errors.Join(jsonErr, writeErr); err != nil {
@@ -46,23 +47,9 @@ func LoadNotebook(wg *sync.WaitGroup) {
 
 // config
 
-func defaultConfig() Config {
-  return Config { // put in vars?
-    Server: ServerConfig {
-      Url: "",
-      Port: ":8282",
-    },
-    Notebook: NotebookConfig {
-      Width: 75,
-      DateFormats: []string{"2006-01-02T15:04", "2006-01-02", "Jan 02", "2", "Mon"},
-      LsDefault: "--all",
-    },
-  }
-}
-
 func LoadConfig(wg *sync.WaitGroup) {
   defer wg.Done()
-  NtConfig = defaultConfig()
+  NtConfig = DefaultConfig
   tomlFile, fileErr := os.ReadFile(NtPath + "config.toml")
   if fileErr == nil {
     tomlErr := toml.Unmarshal(tomlFile, &NtConfig)

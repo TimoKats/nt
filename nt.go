@@ -45,7 +45,7 @@ func run(arguments Arguments) error {
       NtNotes, pullErr = server.PullNotebook()
       return pullErr
     default:
-      return errors.New("No valid command found. Use <<ls, add, mv>>")
+      return errors.New(HelpString)
   }
 }
 
