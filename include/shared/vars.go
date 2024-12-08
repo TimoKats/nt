@@ -31,6 +31,23 @@ var Cyan = "\033[34m"
 
 // other
 var TestMode bool = false
+var version string = "v0.0.1"
 var HelpString string = `Command not found.
-  Valid commands :)
+
+  Valid notebook commands:
+  - add <<text>>: Adds note to nt.
+  - ls: Lists the notes in nt.
+  - rm: Removes notes.
+  - cmt <<id>>: Adds comment to specific note.
+  - tags: Lists the tags in the notebook.
+  - mod: <<id>>: Modifies a selected note. Same args as 'add'.
+  - mv: <<id>>: Checks/Unchecks a note.
+  - s: <<query>>: Filters the notebook on a query.
+
+  Valid server commands:
+  - run: Creates prompt that starts server.
+  - push: Pushes notes to server.
+  - pull: Pulls notes from server.
+  - ping: Checks if server in config is running.
   `
+
