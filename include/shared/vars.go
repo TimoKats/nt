@@ -31,7 +31,6 @@ var Cyan = "\033[34m"
 
 // other
 var TestMode bool = false
-var version string = "v0.0.1"
 var HelpString string = `Command not found.
 
   Valid notebook commands:
