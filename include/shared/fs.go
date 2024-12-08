@@ -55,6 +55,8 @@ func LoadConfig(wg *sync.WaitGroup) {
     tomlErr := toml.Unmarshal(tomlFile, &NtConfig)
     NtConfigErr = tomlErr
   }
-  NtConfigErr = fileErr
+  if !errors.Is(fileErr, os.ErrNotExist) {
+    NtConfigErr = fileErr
+  }
 }
 

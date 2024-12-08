@@ -35,13 +35,13 @@ var HelpString string = `Command not found.
 
   Valid notebook commands:
   - add <<text>>: Adds note to nt.
-  - ls: Lists the notes in nt.
-  - rm: Removes notes.
+  - ls Lists the notes in nt.
+  - rm Removes notes.
   - cmt <<id>>: Adds comment to specific note.
-  - tags: Lists the tags in the notebook.
-  - mod: <<id>>: Modifies a selected note. Same args as 'add'.
-  - mv: <<id>>: Checks/Unchecks a note.
-  - s: <<query>>: Filters the notebook on a query.
+  - tags Lists the tags in the notebook.
+  - mod <<id>>: Modifies a selected note. Same args as 'add'.
+  - mv <<id>>: Checks/Unchecks a note.
+  - s <<query>>: Filters the notebook on a query.
 
   Valid server commands:
   - run: Creates prompt that starts server.
