@@ -5,7 +5,11 @@
 [![stars - nt](https://img.shields.io/github/stars/TimoKats/nt?style=social)](https://github.com/TimoKats/nt)
 [![forks - nt](https://img.shields.io/github/forks/TimoKats/nt?style=social)](https://github.com/TimoKats/nt) 
 
-NT is a quick note taking tool for the CLI. Beside basic commands, it integrates with the clipboard and supports self-hosting using NTS (note taking server).
+NT is a quick note taking tool for the CLI. Beside basic commands, it integrates with the clipboard and supports self-hosting using NTS (note taking server). It can be installed using go.
+
+```
+go install github.com/TimoKats/nt@latest
+```
 
 ## Note taking
 NT supports a number of commands that can be enriched with certain patterns. All commands are prefixed with nt. So for example: `nt add close the PRs :due:Fri :tag:work`
