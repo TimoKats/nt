@@ -1,12 +1,16 @@
 # NT
+![example workflow](https://github.com/timokats/nt/actions/workflows/test.yaml/badge.svg)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-red.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![GitHub tag](https://img.shields.io/github/tag/TimoKats/nt?include_prereleases=&sort=semver&color=cyan)](https://github.com/TimoKats/nt/releases/)
+[![stars - nt](https://img.shields.io/github/stars/TimoKats/nt?style=social)](https://github.com/TimoKats/nt)
+[![forks - nt](https://img.shields.io/github/forks/TimoKats/nt?style=social)](https://github.com/TimoKats/nt) 
+
 NT is a quick note taking tool for the CLI. Beside basic commands, it integrates with the clipboard and supports self-hosting using NTS (note taking server).
 
-
 ## Note taking
-NT supports a number of commands that can be enriched with certain patterns.
+NT supports a number of commands that can be enriched with certain patterns. All commands are prefixed with nt. So for example: `nt add close the PRs :due:Fri :tag:work`
 
 ### Commands
-All commands are prefixed with nt. So for example: `nt add close the PRs :due:Fri :tag:work`
 
 <table>
   <thead>
@@ -21,15 +25,15 @@ All commands are prefixed with nt. So for example: `nt add close the PRs :due:Fr
       <td>Adds a note to your notebook.</td>
     </tr>
     <tr width="600px">
-      <td>ls</td>
+      <td>ls *IDs*</td>
       <td>Lists the notes in your notebook.</td>
     </tr>
     <tr width="600px">
-      <td>rm *id*</td>
+      <td>rm *IDs*</td>
       <td>Removes notes (all notes by default!).</td>
     </tr>
     <tr width="600px">
-      <td>cmt *id*</td>
+      <td>cmt *IDs*</td>
       <td>Adds comment to specific note.</td>
     </tr>
     <tr width="600px">
@@ -37,11 +41,11 @@ All commands are prefixed with nt. So for example: `nt add close the PRs :due:Fr
       <td>Lists the tags in the notebook.</td>
     </tr>
     <tr width="600px">
-      <td>mod *id*</td>
+      <td>mod *IDs*</td>
       <td>Modifies a selected note. Same args as 'add'.</td>
     </tr>
     <tr width="600px">
-      <td>mv *id*</td>
+      <td>mv *IDs*</td>
       <td>Checks/Unchecks a note.</td>
     </tr>
     <tr width="600px">
@@ -90,7 +94,62 @@ All commands are prefixed with nt. So for example: `nt add close the PRs :due:Fr
   </tbody>
 </table>
 
-
 ## Note hosting
+Any installation of NT can double as a server (NTS). It uses a REST API with basic authentication to send information between the server and the client. To setup/interact with your server, you can use the following commands.
+
+> [!IMPORTANT]
+> Upon setup (run command) you define your username and password for the basic authentication. This information isn't stored anywhere on your system. However, you can terminate/restart your server safely without losing the contents of your notes.
+
+
+### Commands
+
+<table>
+  <thead>
+    <tr>
+      <th width="250px">Command</th>
+      <th width="250px">Endpoint</th>
+      <th width="500px">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr width="600px">
+      <td>run</td>
+      <td></td>
+      <td>Creates a prompt that starts NTS. By default it runs on port 8282.</td>
+    </tr>
+    <tr width="600px">
+      <td>push</td>
+      <td>/push</td>
+      <td>Pushes a notebook from the client to the server.</td>
+    </tr>
+    <tr width="600px">
+      <td>pull</td>
+      <td>/pull</td>
+      <td>Pulls a notebook from the server to the client.</td>
+    </tr>
+    <tr width="600px">
+      <td>ping</td>
+      <td>/ping</td>
+      <td>Health check from the client to the server.</td>
+    </tr>
+  </tbody>
+</table>
+
+Note, the `run` command is used wherever you want your server to exist. It will also store the notebooks there. The other commands are used where you take your notes.
 
 ## Configuration
+No configuration is nessesary to use NT. However, you can add a `config.toml` file in `~/.nt` that supports the following options.
+
+```toml
+[server]
+url = "http://000.000.00.000"
+port = ":8282"
+
+[notebook]
+width = 40
+ls_default = "--all"
+# I recommend against changing the supported date formats for now...
+date_format = ["2006-01-02T15:04", "2006-01-02", "Jan 02", "2", "Mon"] 
+```
+
+
